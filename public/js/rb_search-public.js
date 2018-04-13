@@ -74,9 +74,57 @@
 			var ul = arrToUl(schools);
 			divv.appendChild(ul);
 
+			// let search = document.querySelector(".rb_search");
+			console.log(divv);
+			let links = divv.getElementsByTagName("a");
+			console.log(links);
+			for (var i = 0, len = links.length; i < len; i++) {
+				links[i].onclick = function (e) {
+					e.preventDefault();
+					console.log(e.target.attributes[0].nodeValue);
+					let id = e.target.attributes[0].nodeValue;
+					getEducations(id);
+				}
+			}
+
 	  });
 
-	  console.log(schools);
+	  /*
+	  * @param school id
+	  * @return educations
+	  *
+	  */
+	  function getEducations(id) {
+		 // get educations
+		 let educations = [];
+		 let url = "https://susanavet2.skolverket.se/api/1.1/infos?id=" + id;
+
+		 fetch(url)
+	  	  .then(function(response) {
+	  	    return response.json();
+	  	  })
+	  	  .then(function(myJson) {
+
+	  		myJson.content.map(function(result) {
+				console.log(result.content.educationInfo.title.string[0].content)
+	  			// schools.push({
+	  			// 	"name": result.content.educationProvider.name.string[0].content,
+	  			// 	"id": result.content.educationProvider.identifier});
+
+
+	  		})
+		});
+
+	  }
+
+
+
+	  //console.log(schools);
+
+
+	  // links.addEventListener("click", function(target) {
+		//   console.log(target);
+	  // })
 
 	  function arrToUl(arr) {
 
@@ -88,6 +136,7 @@
 			    li = document.createElement('li');
 				link = document.createElement('a');
 				link.setAttribute('href', arr[i].id);
+				link.classList.add('school-id');
 				link.appendChild(document.createTextNode(arr[i].name));
 			    li.appendChild(link);
 			    ul.appendChild(li);
