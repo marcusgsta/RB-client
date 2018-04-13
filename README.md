@@ -12,6 +12,14 @@ Here is a short description of the plugin.  This should be no more than 150 char
 
 == Description ==
 
+1. Klona repo och lägg i wordpress plugin folder.
+2. På en post eller page, skriv [rb_search] så kommer pluginet att inkluderas på den platsen.
+
+
+
+
+
+
 This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
 
 For backwards compatibility, if this section is missing, the full length of the short description will be used, and
