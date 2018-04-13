@@ -13,7 +13,9 @@ Here is a short description of the plugin.  This should be no more than 150 char
 == Description ==
 
 1. Klona repo och lägg i wordpress plugin folder.
-2. På en post eller page, skriv [rb_search] så kommer pluginet att inkluderas på den platsen.
+2. Gå in i din wordpress-installations admin-sidor
+3. Aktivera plugin Rb_Search.
+4. I en post eller page, skriv [rb_search] så kommer pluginet att inkluderas på den platsen.
 
 
 
