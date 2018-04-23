@@ -51,46 +51,150 @@
 
 
 	*/
-	let schools = [];
 
-	 fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
-	  .then(function(response) {
-	    return response.json();
-	  })
-	  .then(function(myJson) {
-	    // console.log(myJson);
-		myJson.content.map(function(result) {
+	// START PAGE
 
-			schools.push({
-				"name": result.content.educationProvider.name.string[0].content,
-				"id": result.content.educationProvider.identifier});
+	// set content to start
+
+	createStartPage();
+
+	function createStartPage() {
+		// Check if the parent element exists, which means that the plugin is activated and included in the document
+		let search_el = document.querySelector('.rb_search');
+
+		if (search_el !== null) {
+
+			let schools = [];
+
+			 fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
+			  .then(function(response) {
+				return response.json();
+			  })
+			  .then(function(myJson) {
+
+				myJson.content.map(function(result) {
+
+					schools.push({
+						"name": result.content.educationProvider.name.string[0].content,
+						"id": result.content.educationProvider.identifier});
+
+					})
+				})
+				.then(function() {
+					var search_div = document.querySelector('.rb_search')
+
+					var ul = arrToUl(schools);
+					search_div.appendChild(ul);
+
+					let links = search_div.getElementsByTagName("a");
+
+					for (var i = 0, len = links.length; i < len; i++) {
+						links[i].onclick = function (e) {
+							e.preventDefault();
+							let id = e.target.attributes[0].nodeValue;
+							console.log(id);
+
+							let titles = getEducations(id);
+							getSchoolInfo(id);
+							// .then(function(schoolInfo){
+							// 	createSchoolInfoElements(schoolInfo);
+							// })
+
+							//createEducations(titles);
+						}
+					}
+			  });
+			  // .then(function(titles) {
+				//   if (titles !== undefined) {
+				//   	createEducations(titles);
+				//   }
+			  // })
+		  }
+	}
 
 
-		})
-		})
-		.then(function() {
-			var divv = document.querySelector('.rb_search')
+	  /*
+	  * @param school id
+	  * @return information
+	  *
+	  */
+	  function getSchoolInfo(id) {
+		  let url = "https://susanavet2.skolverket.se/api/1.1/providers/" + id;
 
-			var ul = arrToUl(schools);
-			divv.appendChild(ul);
+		  fetch(url)
+		  .then(function(response) {
+			  return response.json();
+		  })
+		  .then(function(myJson) {
+			  createSchoolInfoElements(myJson);
+		  });
+	  }
 
-			// let search = document.querySelector(".rb_search");
+	  /*
+	  * @param school id
+	  * @return void
+	  *
+	  */
+	  function createSchoolInfoElements(myJson) {
 
-			let links = divv.getElementsByTagName("a");
+		  let wrapper = document.querySelector('.rb_search');
+		  if (wrapper !== null) {
+			  let school = myJson.content.educationProvider;
+			  // create elements
+			  let content = document.createElement('div');
+			  content.id = 'school_info';
+			  // create name element
+			  let name_el = document.createElement('h2');
+			  let name = school.name.string[0].content;
+			  let name_text = document.createTextNode(name);
+			  name_el.appendChild(name_text);
+			  // create email element
+			  let email_el = document.createElement('div');
+			  let email = school.emailAddress;
+			  let email_text = document.createTextNode("Epost: " + email);
+			  email_el.appendChild(email_text);
+			  // create url element
+			  let url_el = document.createElement('div');
+			  let url = school.url[0].url[0].content;
+			  url = fixUrl(url);
+			  let url_text = document.createTextNode("URL: " + url);
+			  let url_link = document.createElement('a');
+			  url_link.setAttribute('href', url);
+			  url_link.appendChild(url_text);
+			  url_el.appendChild(url_link);
+			  // create address element
+			  let address_el = document.createElement('div');
+			  let address = school.visitAddress;
+			  let street = address.streetAddress;
+			  let address_text = document.createTextNode("Address: " + street);
+			  address_el.appendChild(address_text);
+			  // create town element
+			  let town_el = document.createElement('div');
+			  let town = address.town;
+			  let town_text = document.createTextNode("Stad: " + town);
+			  town_el.appendChild(town_text);
 
-			for (var i = 0, len = links.length; i < len; i++) {
-				links[i].onclick = function (e) {
-					e.preventDefault();
-					console.log(e.target.attributes[0].nodeValue);
-					let id = e.target.attributes[0].nodeValue;
-					let titles = getEducations(id);
-					console.log(titles);
-					createEducations(titles);
+			  content.appendChild(name_el);
+			  content.appendChild(email_el);
+			  content.appendChild(url_el);
+			  content.appendChild(address_el);
+			  content.appendChild(town_el);
+			  wrapper.appendChild(content);
+		  }
 
-				}
-			}
 
-	  });
+	  }
+
+	  function fixUrl(url) {
+		var prefix = '//';
+		var www = 'www';
+		if (url.substr(0, www.length) === www)
+		{
+		    url = prefix + url;
+		}
+		return url;
+	  }
+
 
 	  /*
 	  * @param school id
@@ -108,40 +212,80 @@
 	  	    return response.json();
 	  	  })
 	  	  .then(function(myJson) {
+		  		myJson.content.map(function(result) {
 
-	  		myJson.content.map(function(result) {
-				// console.log(result.content.educationInfo.title.string[0].content)
-				titles.push(result.content.educationInfo.title.string[0].content);
-	  		})
+					titles.push(result.content.educationInfo.title.string[0].content);
+	  			})
+			// async await bättre?
+
 			createEducations(titles);
-			console.log(titles);
-		})
+			//console.log(titles);
+			// return titles;
+			})
+	  }
+
+	  function createSchoolPage() {
+
+		  // create Home Button
+		  let button = document.createElement('button');
+		  button.id = "home-button";
+		  let button_text = document.createTextNode('Alla skolor');
+		  button.appendChild(button_text);
+
+		  let content = document.querySelector('.rb_search');
+		  content.appendChild(button);
+
+		  // "Alla skolor" button
+		  button.addEventListener('click', function() {
+			clearAll();
+			createStartPage();
+
+		});
 
 	  }
 
+	  function clearAll() {
+
+		  let search_el = document.querySelector('.rb_search');
+		  while (search_el.firstChild) {
+			  search_el.removeChild(search_el.firstChild);
+		  }
+	  }
+
+	  function clearPage() {
+		  let school_list = document.getElementById('school_list');
+		  if (school_list !== null) {
+			  removeElement('school_list');
+		  }
+
+		  let el = document.getElementById('educations');
+		  if (el !== null) {
+			  removeElement('educations');
+		  }
+	  }
+
 	  function createEducations(titles) {
+		  clearPage();
+		  createSchoolPage();
 		  let div = document.createElement("div");
+		  div.id = 'educations';
 		  let search = document.querySelector(".rb_search");
-		  console.log(titles);
+
 		  let educations = document.createTextNode(titles);
 		  div.appendChild(educations);
 		  search.appendChild(div);
 	  }
 
+	  function removeElement(id) {
+    	var elem = document.getElementById(id);
+    	return elem.parentNode.removeChild(elem);
+	}
 
-
-
-
-	  //console.log(schools);
-
-
-	  // links.addEventListener("click", function(target) {
-		//   console.log(target);
-	  // })
 
 	  function arrToUl(arr) {
 
 		  var ul = document.createElement('ul'), li, link;
+		  ul.id = 'school_list';
 
 		  for (var i = 0; i < arr.length; i++) {
 

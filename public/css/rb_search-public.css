@@ -2,3 +2,39 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+ .rb_search ul {
+     list-style-type: none;
+ }
+
+ .rb_search li {
+     float:left;
+     margin: 0;
+ }
+
+.rb_search a.school-id {
+    font-size: 1.2rem;
+    text-decoration: none;
+    /* reset wordpress themes box-shadow styles */
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding: 0 6px 0 6px;
+    /* border: 1px solid silver; */
+    margin: 0;
+}
+
+.rb_search a.school-id:hover {
+    background-color: lightblue;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.rb_search a.school-id:focus {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+
+#educations {
+    clear: both;
+}
