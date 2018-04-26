@@ -49,8 +49,17 @@
 		Sök på skolans id för att få utb.programmen där (infos):
 		https://susanavet2.skolverket.se/api/1.1/infos?id=p.sv.78839208
 
+		Söka på id efter utbildning, för att visa info
+		https://susanavet2.skolverket.se/api/1.1/infos/i.sv.HUSPR
+
 
 	*/
+
+	// need to include polyfills for fetch and for promises
+	// https://medium.com/@wisecobbler/using-the-javascript-fetch-api-f92c756340f0
+
+	// Definer global variables
+	let saved_schools = [];
 
 	// START PAGE
 
@@ -58,60 +67,94 @@
 
 	createStartPage();
 
+	// function fetchAllSchools() {
+	// 	var apiRequest = fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
+	// 	 .then(function(response) {
+	// 	   return response.json();
+	//    });
+	//    return apiRequest;
+	// }
+
+	function buildTitle(title_string) {
+		let search_el = document.querySelector('.rb_search')
+		let title = document.createElement('h2');
+		title.id = "rb-title";
+		let title_text = document.createTextNode(title_string);
+		title.appendChild(title_text);
+		search_el.appendChild(title);
+	}
+
 	function createStartPage() {
 		// Check if the parent element exists, which means that the plugin is activated and included in the document
 		let search_el = document.querySelector('.rb_search');
 
 		if (search_el !== null) {
 
-			let schools = [];
+			// Check if schools already saved
+			if ((saved_schools === undefined || saved_schools.length == 0)) {
 
-			 fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
-			  .then(function(response) {
-				return response.json();
-			  })
-			  .then(function(myJson) {
+				let schools = [];
 
-				myJson.content.map(function(result) {
+				 fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
+				  .then(function(response) {
+						return response.json();
+				  })
+				 .then(function(myJson) {
 
-					schools.push({
-						"name": result.content.educationProvider.name.string[0].content,
-						"id": result.content.educationProvider.identifier});
+					myJson.content.map(function(result) {
 
-					})
-				})
-				.then(function() {
-					var search_div = document.querySelector('.rb_search')
+						schools.push({
+							"name": result.content.educationProvider.name.string[0].content,
+							"id": result.content.educationProvider.identifier});
+						})
 
-					var ul = arrToUl(schools);
-					search_div.appendChild(ul);
+						// add to saved_schools if no prev api call
+						saved_schools = schools;
 
-					let links = search_div.getElementsByTagName("a");
+						console.log("saved_schools:", saved_schools);
 
-					for (var i = 0, len = links.length; i < len; i++) {
-						links[i].onclick = function (e) {
-							e.preventDefault();
-							let id = e.target.attributes[0].nodeValue;
-							console.log(id);
+					 })
+					.then(function() {
+						buildSchools(schools);
+				  });
 
-							let titles = getEducations(id);
-							getSchoolInfo(id);
-							// .then(function(schoolInfo){
-							// 	createSchoolInfoElements(schoolInfo);
-							// })
+			  } else {
+				  // use saved schools
+				  buildSchools(saved_schools);
+			  }
 
-							//createEducations(titles);
-						}
-					}
-			  });
-			  // .then(function(titles) {
-				//   if (titles !== undefined) {
-				//   	createEducations(titles);
-				//   }
-			  // })
 		  }
 	}
 
+
+
+
+
+	function buildSchools(schools) {
+		var search_div = document.querySelector('.rb_search')
+		buildTitle("Alla skolor");
+		// search_div.appendChild(title);
+		var ul = arrToUl(schools);
+		search_div.appendChild(ul);
+
+		let links = search_div.getElementsByTagName("a");
+
+		for (var i = 0, len = links.length; i < len; i++) {
+			links[i].onclick = function (e) {
+				e.preventDefault();
+				let id = e.target.attributes[0].nodeValue;
+				console.log(id);
+
+				let titles = getEducations(id);
+				getSchoolInfo(id);
+				// .then(function(schoolInfo){
+				// 	createSchoolInfoElements(schoolInfo);
+				// })
+
+				//createEducations(titles);
+			}
+		}
+	}
 
 	  /*
 	  * @param school id
@@ -224,24 +267,22 @@
 			})
 	  }
 
-	  function createSchoolPage() {
-
+	  function createHomeButton() {
 		  // create Home Button
 		  let button = document.createElement('button');
 		  button.id = "home-button";
-		  let button_text = document.createTextNode('Alla skolor');
+		  let button_text = document.createTextNode('Visa alla skolor');
 		  button.appendChild(button_text);
 
 		  let content = document.querySelector('.rb_search');
 		  content.appendChild(button);
 
-		  // "Alla skolor" button
+		  // Add event listener
 		  button.addEventListener('click', function() {
 			clearAll();
 			createStartPage();
 
 		});
-
 	  }
 
 	  function clearAll() {
@@ -266,7 +307,8 @@
 
 	  function createEducations(titles) {
 		  clearPage();
-		  createSchoolPage();
+		  //clearAll();
+
 		  let div = document.createElement("div");
 		  div.id = 'educations';
 		  let search = document.querySelector(".rb_search");
@@ -274,6 +316,8 @@
 		  let educations = document.createTextNode(titles);
 		  div.appendChild(educations);
 		  search.appendChild(div);
+
+		  createHomeButton();
 	  }
 
 	  function removeElement(id) {
