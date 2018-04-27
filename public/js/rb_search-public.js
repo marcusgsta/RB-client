@@ -58,41 +58,31 @@
 	// need to include polyfills for fetch and for promises
 	// https://medium.com/@wisecobbler/using-the-javascript-fetch-api-f92c756340f0
 
-	// Definer global variables
-	let saved_schools = [];
+	// Define global variables
+	// let saved_schools = [];
 
 	// START PAGE
 
 	// set content to start
+	let saved = JSON.parse(localStorage.getItem("saved_schools"));
+	console.log("saved_schools: " + saved);
 
 	createStartPage();
 
-	// function fetchAllSchools() {
-	// 	var apiRequest = fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
-	// 	 .then(function(response) {
-	// 	   return response.json();
-	//    });
-	//    return apiRequest;
-	// }
 
-	function buildTitle(title_string) {
-		let search_el = document.querySelector('.rb_search')
-		let title = document.createElement('h2');
-		title.id = "rb-title";
-		let title_text = document.createTextNode(title_string);
-		title.appendChild(title_text);
-		search_el.appendChild(title);
-	}
-
+	/**
+	* Creates start page, fetches schools from api if needed
+	* @param void
+	*/
 	function createStartPage() {
 		// Check if the parent element exists, which means that the plugin is activated and included in the document
 		let search_el = document.querySelector('.rb_search');
 
 		if (search_el !== null) {
 
-			// Check if schools already saved
-			if ((saved_schools === undefined || saved_schools.length == 0)) {
+			//console.log(localStorage.getItem('saved_schools'));
 
+			if (localStorage.getItem('saved_schools') === null) {
 				let schools = [];
 
 				 fetch('https://susanavet2.skolverket.se/api/1.1/providers?municipality=1060%2C1080%2C1081%2C1082%2C1083&organisationForm=gymnasieskola&size=25')
@@ -109,9 +99,8 @@
 						})
 
 						// add to saved_schools if no prev api call
-						saved_schools = schools;
-
-						console.log("saved_schools:", saved_schools);
+						// localStorage only takes strings, so convert array
+						localStorage.setItem('saved_schools', JSON.stringify(schools));
 
 					 })
 					.then(function() {
@@ -120,16 +109,18 @@
 
 			  } else {
 				  // use saved schools
+				  console.log("Using cached schools from local storage. To erase local storage and fetch new data from API, write localStorage.removeItem('saved_schools') in your console.");
+				  let saved_schools = JSON.parse(localStorage.getItem("saved_schools"));
 				  buildSchools(saved_schools);
 			  }
-
 		  }
 	}
 
-
-
-
-
+	/**
+	* Creates elements from school array of objects
+	*
+	* @param {array} schools
+	*/
 	function buildSchools(schools) {
 		var search_div = document.querySelector('.rb_search')
 		buildTitle("Alla skolor");
@@ -147,18 +138,30 @@
 
 				let titles = getEducations(id);
 				getSchoolInfo(id);
-				// .then(function(schoolInfo){
-				// 	createSchoolInfoElements(schoolInfo);
-				// })
-
-				//createEducations(titles);
 			}
 		}
 	}
 
-	  /*
+	/**
+	* Creates h2 element for a title
+	* Appends to the end of .rb_search
+	* @param {string} title_string
+	*
+	*/
+	function buildTitle(title_string) {
+		let search_el = document.querySelector('.rb_search')
+		let title = document.createElement('h2');
+		title.id = "rb-title";
+		let title_text = document.createTextNode(title_string);
+		title.appendChild(title_text);
+		search_el.appendChild(title);
+	}
+
+	  /**
+	  * Fetches info about school from id
+	  * ( change name to createSchoolPage() ?
+  	  *
 	  * @param school id
-	  * @return information
 	  *
 	  */
 	  function getSchoolInfo(id) {
@@ -173,10 +176,10 @@
 		  });
 	  }
 
-	  /*
-	  * @param school id
+	  /**
+	  * Creates elements and insert into web page
+	  * @param {object} JSON-object
 	  * @return void
-	  *
 	  */
 	  function createSchoolInfoElements(myJson) {
 
@@ -217,17 +220,22 @@
 			  let town_text = document.createTextNode("Stad: " + town);
 			  town_el.appendChild(town_text);
 
+			  // Append elements at the end of <div id='school_info'>
 			  content.appendChild(name_el);
 			  content.appendChild(email_el);
 			  content.appendChild(url_el);
 			  content.appendChild(address_el);
 			  content.appendChild(town_el);
+			  // Append #school_info at the end of .rb_search
 			  wrapper.appendChild(content);
 		  }
-
-
 	  }
 
+	  /**
+	  * If a url starts with 'www', add '//'
+	  * The browser will add either http or https
+	  * @param {string} url
+	  */
 	  function fixUrl(url) {
 		var prefix = '//';
 		var www = 'www';
@@ -239,13 +247,12 @@
 	  }
 
 
-	  /*
+	  /**
 	  * @param school id
-	  * @return educations
+	  * ( change name to createEducationsPage() ? )
 	  *
 	  */
 	  function getEducations(id) {
-		 // get educations
 		 let educations = [];
 		 let url = "https://susanavet2.skolverket.se/api/1.1/infos?id=" + id;
 		 let titles = [];
@@ -256,17 +263,19 @@
 	  	  })
 	  	  .then(function(myJson) {
 		  		myJson.content.map(function(result) {
-
 					titles.push(result.content.educationInfo.title.string[0].content);
 	  			})
-			// async await bättre?
 
 			createEducations(titles);
-			//console.log(titles);
-			// return titles;
+
 			})
 	  }
 
+	  /**
+	  * Creates a home button
+	  * Append to the end of .rb_search
+	  *
+	  */
 	  function createHomeButton() {
 		  // create Home Button
 		  let button = document.createElement('button');
@@ -281,19 +290,26 @@
 		  button.addEventListener('click', function() {
 			clearAll();
 			createStartPage();
-
 		});
 	  }
 
+	  /**
+	  * Clears all child elements of .rb_search
+	  *
+	  */
 	  function clearAll() {
-
 		  let search_el = document.querySelector('.rb_search');
 		  while (search_el.firstChild) {
 			  search_el.removeChild(search_el.firstChild);
 		  }
 	  }
 
+	  /**
+	  * Removes element #school_list
+	  * Removes element #educations
+	  */
 	  function clearPage() {
+		  //
 		  let school_list = document.getElementById('school_list');
 		  if (school_list !== null) {
 			  removeElement('school_list');
@@ -305,6 +321,13 @@
 		  }
 	  }
 
+	  /**
+	  * ( Not complete, need to make titles a list )
+	  * Creates element from education titles
+	  * Appends to
+	  * @param {array} titles
+	  *
+	  */
 	  function createEducations(titles) {
 		  clearPage();
 		  //clearAll();
@@ -320,13 +343,24 @@
 		  createHomeButton();
 	  }
 
+
+	  /**
+	  * Removes an DOM element by id
+	  * @param {string} id
+	  *
+	  */
 	  function removeElement(id) {
     	var elem = document.getElementById(id);
     	return elem.parentNode.removeChild(elem);
 	}
 
 
-	  function arrToUl(arr) {
+	/**
+	* Creates a ul from array
+	* @param {array} array
+	* @return DOM element UL
+	*/
+	function arrToUl(arr) {
 
 		  var ul = document.createElement('ul'), li, link;
 		  ul.id = 'school_list';
