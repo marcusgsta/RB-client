@@ -51,7 +51,7 @@ function activate_rb_search() {
  * This action is documented in includes/class-plugin-name-deactivator.php
  */
 function deactivate_rb_search() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-plugin-name-deactivator.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-rb_search-deactivator.php';
 	Rb_Search_Deactivator::deactivate();
 }
 
@@ -77,6 +77,6 @@ function run_rb_search() {
 
 	$plugin = new Rb_Search();
 	$plugin->run();
-
 }
+
 run_rb_search();

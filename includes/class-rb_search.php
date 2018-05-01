@@ -175,6 +175,37 @@ class Rb_Search {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		// adding stuff from https://wordpress.stackexchange.com/questions/58067/custom-plugin-route-in-wordpress
+
+		// $this->loader->add_filter( 'rewrite_rules_array', 'my_insert_rewrite_rules' );
+		// $this->loader->add_filter( 'query_vars', 'my_insert_query_vars' );
+		// $this->loader->add_action( 'wp_loaded', 'my_flush_rules' );
+		add_filter( 'rewrite_rules_array', array( $this, 'my_insert_rewrite_rules' ) );
+		add_filter( 'query_vars', array( $this, 'my_insert_query_vars' ) );
+		add_action( 'wp_loaded', array( $this, 'my_flush_rules' ) );
+	}
+
+	// flush_rules () if our rules are not yet included
+	public function my_flush_rules() {
+		$rules = get_option( 'rewrite_rules' );
+
+		if ( ! isset( $rules['schools/(.*?)/(.+?)'] ) ) {
+			global $wp_rewrite;
+			$wp_rewrite->flush_rules();
+		}
+	}
+
+	// Adding a new rule
+	public function my_insert_rewrite_rules( $rules ) {
+		$newrules = array();
+		$newrules['schools/(.*?)/(.+?)'] = 'index.php?myroute=$matches[1]&myargument=$matches[2]';
+    	return $newrules + $rules;
+	}
+
+	// Adding the id var so WP recognizes it
+	public function my_insert_query_vars( $vars ) {
+		array_push($vars, 'myroute', 'myargument' );
+		return $vars;
 	}
 
 	public function shortcode() {
