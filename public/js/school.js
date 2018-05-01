@@ -80,6 +80,19 @@ var school = (function() {
         div.appendChild(ul);
         search.appendChild(div);
 
+        let links = div.getElementsByTagName("a");
+        console.log(links);
+        // Make school names clickable
+        for (var i = 0, len = links.length; i < len; i++) {
+            links[i].onclick = function (e) {
+                e.preventDefault();
+                let id = e.target.attributes[0].nodeValue;
+                console.log(id);
+                education.buildEducationInfo(id);
+
+            }
+        }
+
         //createHomeButton();
     }
 

@@ -71,9 +71,9 @@ var start = (function() {
                 e.preventDefault();
                 let id = e.target.attributes[0].nodeValue;
                 // testing this:
-                var stateObj = { foo: "schools" };
-                history.pushState(stateObj, "page 2", "schools/" + id);
-                console.log(history);
+                // var stateObj = { foo: "schools" };
+                // history.pushState(stateObj, "page 2", "schools/" + id);
+                // console.log(history);
                 // end of test
 
 

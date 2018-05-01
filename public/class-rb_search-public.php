@@ -96,12 +96,14 @@ class Rb_Search_Public {
 		 * class.
 		 */
 
+		 wp_register_script('rb_education', plugin_dir_url( __FILE__ ) .'/js/education.js');
 		 wp_register_script('rb_school', plugin_dir_url( __FILE__ ) .'/js/school.js');
 		 wp_register_script('rb_start', plugin_dir_url( __FILE__ ) .'/js/start.js');
 		 wp_register_script('rb_helpers', plugin_dir_url( __FILE__ ) .'/js/helpers.js');
 		 wp_register_script('rb_main', plugin_dir_url( __FILE__ ) .'/js/main.js');
 		 wp_register_script('rb_func', plugin_dir_url( __FILE__ ) .'/js/rb_search-public.js');
 
+		 wp_enqueue_script('rb_education', '', '', '', true);
 		 wp_enqueue_script('rb_school', '', '', '', true);
 		 wp_enqueue_script('rb_start', '', '', '', true);
 		 wp_enqueue_script('rb_helpers', '', '', '', true);
