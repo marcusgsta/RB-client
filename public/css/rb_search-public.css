@@ -34,6 +34,18 @@
     box-shadow: none;
 }
 
+.rb_search nav {
+    margin: 0 0 20px 0;
+}
+
+.rb_search nav li {
+    float:left;
+}
+
+.rb_container {
+    clear: both;
+}
+
 #home-button {
     float:right;
 }

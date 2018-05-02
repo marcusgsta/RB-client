@@ -35,18 +35,37 @@ var helpers = (function() {
     }
 
     /**
-    * Creates h2 element for a title
+    * Removes children of #mainContainer
+    *
+    */
+    var clearMainContainer = function() {
+        if (window.mainContainer !== null) {
+
+            let main = window.mainContainer;
+
+            while (main.firstChild) {
+                main.removeChild(main.firstChild);
+            }
+        }
+    }
+
+    /**
+    * Creates h3 element for a title
     * Appends to the end of .rb_search
     * @param {string} title_string
     *
     */
     var buildTitle = function(title_string) {
-        let search_el = document.querySelector('.rb_search')
-        let title = document.createElement('h2');
-        title.id = "rb-title";
-        let title_text = document.createTextNode(title_string);
-        title.appendChild(title_text);
-        search_el.appendChild(title);
+        // let search_el = document.querySelector('.rb_search');
+        console.log(window.mainContainer);
+        if (window.mainContainer !== null) {
+            let title = document.createElement('h3');
+            title.id = "rb-title";
+            let title_text = document.createTextNode(title_string);
+            title.appendChild(title_text);
+            // search_el.appendChild(title);
+            window.mainContainer.appendChild(title);
+        }
     }
 
     /**
@@ -128,6 +147,7 @@ var helpers = (function() {
     return {
         clearAll: clearAll,
         clearPage: clearPage,
+        clearMainContainer: clearMainContainer,
         buildTitle: buildTitle,
         arrToUl: arrToUl,
         createHomeButton: createHomeButton,

@@ -30,9 +30,9 @@ var school = (function() {
           .then(function() {
               createEducations(titles);
           })
-          .then(function() {
-              helpers.createHomeButton();
-          })
+          // .then(function() {
+          //     helpers.createHomeButton();
+          // })
     }
 
 
@@ -73,12 +73,13 @@ var school = (function() {
 
         let div = document.createElement("div");
         div.id = 'educations';
-        let search = document.querySelector(".rb_search");
+        // let search = document.querySelector(".rb_search");
         let selector_id = 'educations_list';
         let ul = helpers.arrToUl(titles, selector_id);
         // let educations = document.createTextNode(titles);
         div.appendChild(ul);
-        search.appendChild(div);
+        window.mainContainer.appendChild(div);
+        // search.appendChild(div);
 
         let links = div.getElementsByTagName("a");
         console.log(links);
@@ -103,8 +104,10 @@ var school = (function() {
     */
     var createSchoolInfoElements = function(myJson) {
 
-        let wrapper = document.querySelector('.rb_search');
-        if (wrapper !== null) {
+        // let wrapper = document.querySelector('.rb_search');
+
+        // if (wrapper !== null) {
+        if (window.mainContainer !== null) {
             let school = myJson.content.educationProvider;
             // create elements
             let content = document.createElement('div');
@@ -147,7 +150,8 @@ var school = (function() {
             content.appendChild(address_el);
             content.appendChild(town_el);
             // Append #school_info at the end of .rb_search
-            wrapper.appendChild(content);
+            // wrapper.appendChild(content);
+            window.mainContainer.appendChild(content);
         }
     }
 

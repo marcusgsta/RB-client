@@ -36,9 +36,10 @@ var education = (function() {
     * @return void
     */
     var createEducationInfoElements = function(myJson) {
-        helpers.clearAll();
-        let wrapper = document.querySelector('.rb_search');
-        if (wrapper !== null) {
+        helpers.clearMainContainer();
+        // let wrapper = document.querySelector('.rb_search');
+        // if (wrapper !== null) {
+        if (window.mainContainer !== null) {
             let education = myJson.content.educationInfo;
             // create elements
             let content = document.createElement('div');
@@ -64,7 +65,8 @@ var education = (function() {
             }
 
             // Append #education_info at the end of .rb_search
-            wrapper.appendChild(content);
+            // wrapper.appendChild(content);
+            window.mainContainer.appendChild(content);
         }
     }
 

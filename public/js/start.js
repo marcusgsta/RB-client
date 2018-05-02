@@ -9,10 +9,11 @@ var start = (function() {
     var startPage = function () {
         // Check if the parent element exists, which means that the plugin is activated and included in the document
 
-        let search_el = document.querySelector('.rb_search');
-        console.log(search_el);
-        if (search_el !== null) {
+        //let search_el = document.querySelector('.rb_search');
 
+        if (window.mainContainer !== null) {
+        // if (search_el !== null) {
+        helpers.clearMainContainer();
             if (localStorage.getItem('saved_schools') === null) {
                 // fetch schools
                 let schools = [];
@@ -56,14 +57,16 @@ var start = (function() {
     * @param {array} schools
     */
     var createSchoolsElements = function(schools) {
-        var search_div = document.querySelector('.rb_search')
-        helpers.buildTitle("Alla skolor");
+        // var search_div = document.querySelector('.rb_search')
+        //helpers.buildTitle("Alla skolor");
 
         let selector_id = 'school_list';
         var ul = helpers.arrToUl(schools, selector_id);
-        search_div.appendChild(ul);
-
-        let links = search_div.getElementsByTagName("a");
+        // search_div.appendChild(ul);
+        window.mainContainer.appendChild(ul);
+        window.wrapper.appendChild(window.mainContainer);
+        // let links = search_div.getElementsByTagName("a");
+        let links = window.mainContainer.getElementsByTagName("a");
 
         // Make school names clickable
         for (var i = 0, len = links.length; i < len; i++) {
