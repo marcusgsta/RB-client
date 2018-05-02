@@ -56,14 +56,11 @@ var helpers = (function() {
     *
     */
     var buildTitle = function(title_string) {
-        // let search_el = document.querySelector('.rb_search');
-        console.log(window.mainContainer);
         if (window.mainContainer !== null) {
             let title = document.createElement('h3');
             title.id = "rb-title";
             let title_text = document.createTextNode(title_string);
             title.appendChild(title_text);
-            // search_el.appendChild(title);
             window.mainContainer.appendChild(title);
         }
     }

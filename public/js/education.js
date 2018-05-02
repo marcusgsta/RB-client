@@ -9,21 +9,35 @@ var education = (function() {
     *
     */
     var buildEducationInfo = function(id) {
-        let url = "https://susanavet2.skolverket.se/api/1.1/infos/" + id;
 
-        fetch(url)
-        .then(function(response) {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(function(myJson) {
-            createEducationInfoElements(myJson);
-        })
-        .catch(function(error) {
-            console.log('There has been a problem with your fetch operation: ', error.message);
-        });
+        let saved_ed_info = localStorage.getItem("education_info" + id);
+        let parsed = JSON.parse(saved_ed_info);
+
+        if (parsed === null) {
+            let url = "https://susanavet2.skolverket.se/api/1.1/infos/" + id;
+
+            fetch(url)
+            .then(function(response) {
+                if (response.ok) {
+                  return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(function(myJson) {
+                // Save education info in local storage for quicker future retrieval
+                localStorage.setItem("education_info" + id, JSON.stringify(myJson));
+
+                createEducationInfoElements(myJson);
+            })
+            .catch(function(error) {
+                console.log('There has been a problem with your fetch operation: ', error.message);
+            });
+        } else {
+            console.log("Using saved education info. To erase all memory in local storage, write: localStorage.clear(); in your console.");
+            let restored_ed_info = localStorage.getItem("education_info" + id);
+            let parsed_ed_info = JSON.parse(restored_ed_info);
+            createEducationInfoElements(parsed_ed_info);
+        }
     }
 
 
@@ -48,10 +62,8 @@ var education = (function() {
             let content = document.createElement('div');
             content.id = 'education_info';
             // create name element
-            console.log(myJson);
             let name = education.title.string[0].content;
-            console.log(name);
-            helpers.buildTitle(name);
+            // helpers.buildTitle(name);
             // create description element
             let myProp = 'description';
             if (education.hasOwnProperty(myProp)) {

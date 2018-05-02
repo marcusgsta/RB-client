@@ -17,10 +17,9 @@ var nav = (function() {
             if (selected === element.class) {
                 navElement.className = "active";
             }
-            console.log("id:",school_id);
+
             if (element.class === "rb_school") {
                 school_id = element.id;
-                console.log(school_id);
                 element.nav = function() {
                     school.createSchoolPage(school_id);
                 }

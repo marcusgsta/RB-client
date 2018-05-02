@@ -10,33 +10,66 @@ var school = (function() {
     */
     // var createSchoolPage = function(id, titles) {
     var createSchoolPage = function(id) {
-        let url = "https://susanavet2.skolverket.se/api/1.1/providers/" + id;
+        let restored_info = localStorage.getItem("saved_info" + id);
+        let parsed_info = JSON.parse(restored_info);
 
-        fetch(url)
-        .then(function(response) {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(function(myJson) {
-            // create / update navElements
-            let name = myJson.content.educationProvider.name.string[0].content;
-            let navElements = [
-                {name: "Start", class: "rb_start", nav: start.startPage},
-                {name: name, class: "rb_school", id: id, nav: {}}
-            ];
-            // let school_id = id;
+        if (parsed_info === null) {
 
-            nav.buildNav(navElements, "rb_school");
-            main.globalNavElements = navElements;
-            
-            createSchoolInfoElements(myJson);
+            let url = "https://susanavet2.skolverket.se/api/1.1/providers/" + id;
+
+            fetch(url)
+            .then(function(response) {
+                if (response.ok) {
+                  return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(function(myJson) {
+                // create / update navElements
+                let name = myJson.content.educationProvider.name.string[0].content;
+                updateNavElements(name, id);
+                // let navElements = [
+                //     {name: "Start", class: "rb_start", nav: start.startPage},
+                //     {name: name, class: "rb_school", id: id, nav: {}}
+                // ];
+                //
+                // nav.buildNav(navElements, "rb_school");
+                // main.globalNavElements = navElements;
+                // update localStorage for this schools id
+                let schoolInfo = myJson;
+                localStorage.setItem("saved_info" + id, JSON.stringify(schoolInfo));
+
+                createSchoolInfoElements(myJson);
+                buildEducations(id);
+            })
+            .catch(function(error) {
+                console.log('There has been a problem with your fetch operation: ', error.message);
+            });
+        } else {
+            console.log("Using saved school info. To erase all memory in local storage, write: localStorage.clear(); in your console.");
+            let restored = localStorage.getItem("saved_info" + id);
+            let parsed = JSON.parse(restored_info);
+
+            let name = parsed.content.educationProvider.name.string[0].content;
+            updateNavElements(name, id);
+
+            createSchoolInfoElements(parsed);
             buildEducations(id);
-        })
-        .catch(function(error) {
-            console.log('There has been a problem with your fetch operation: ', error.message);
-        });
+        }
+    }
+
+
+    /**
+    *
+    *
+    */
+    var updateNavElements = function(name, id) {
+        let navElements = [
+            {name: "Start", class: "rb_start", nav: start.startPage},
+            {name: name, class: "rb_school", id: id, nav: {}}
+        ];
+        nav.buildNav(navElements, "rb_school");
+        main.globalNavElements = navElements;
     }
 
 
@@ -47,25 +80,36 @@ var school = (function() {
     *
     */
     var buildEducations = function(id) {
+        let restored_education = localStorage.getItem("school_education" + id);
+        let parsed_education = JSON.parse(restored_education);
 
-       let url = "https://susanavet2.skolverket.se/api/1.1/infos?id=" + id;
-       let titles = [];
+        if (parsed_education === null) {
+           let url = "https://susanavet2.skolverket.se/api/1.1/infos?id=" + id;
+           let titles = [];
 
-       fetch(url)
-        .then(function(response) {
-          return response.json();
-        })
-        .then(function(myJson) {
-              myJson.content.map(function(result) {
-                  titles.push({
-                      "name": result.content.educationInfo.title.string[0].content,
-                      "id": result.content.educationInfo.identifier});
+           fetch(url)
+            .then(function(response) {
+              return response.json();
+            })
+            .then(function(myJson) {
+                  myJson.content.map(function(result) {
+                      titles.push({
+                          "name": result.content.educationInfo.title.string[0].content,
+                          "id": result.content.educationInfo.identifier});
+                      })
+                      let school_education = titles;
+                      localStorage.setItem("school_education" + id, JSON.stringify(school_education));
+
                   })
-
+              .then(function() {
+                  createEducations(titles);
               })
-          .then(function() {
-              createEducations(titles);
-          })
+          } else {
+              console.log("Using saved educations. To erase all memory in local storage, write: localStorage.clear(); in your console.");
+              let restored = localStorage.getItem("school_education" + id);
+              let parsed = JSON.parse(restored);
+              createEducations(parsed);
+          }
     }
 
 
@@ -80,23 +124,20 @@ var school = (function() {
     var createEducations = function(titles) {
         let div = document.createElement("div");
         div.id = 'educations';
-        // let search = document.querySelector(".rb_search");
+
         let selector_id = 'educations_list';
         let ul = helpers.arrToUl(titles, selector_id);
-        // let educations = document.createTextNode(titles);
+
         div.appendChild(ul);
         window.mainContainer.appendChild(div);
 
-        // let links = div.getElementsByTagName("a");
         let links = div.getElementsByTagName("a");
-        console.log(div);
-        console.log(links);
+
         // Make school names clickable
         for (var i = 0, len = links.length; i < len; i++) {
             links[i].onclick = function (e) {
                 e.preventDefault();
                 let id = e.target.attributes[0].nodeValue;
-                console.log(id);
                 education.buildEducationInfo(id);
             }
         }
