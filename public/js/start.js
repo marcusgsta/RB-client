@@ -7,13 +7,13 @@ var start = (function() {
     * @param void
     */
     var startPage = function () {
+        var navElements = [{name: "Start", class: "rb_start", nav: start.startPage}];
+
+        var selected = "rb_start";
+        nav.buildNav(navElements, selected);
         // Check if the parent element exists, which means that the plugin is activated and included in the document
-
-        //let search_el = document.querySelector('.rb_search');
-
         if (window.mainContainer !== null) {
-        // if (search_el !== null) {
-        helpers.clearMainContainer();
+            helpers.clearMainContainer();
             if (localStorage.getItem('saved_schools') === null) {
                 // fetch schools
                 let schools = [];
@@ -80,7 +80,8 @@ var start = (function() {
                 // end of test
 
 
-                school.buildEducations(id);
+                // school.buildEducations(id);
+                school.createSchoolPage(id);
                 //createSchoolPage(id);
             }
         }

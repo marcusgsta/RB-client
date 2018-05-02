@@ -8,6 +8,8 @@ var main = (function () {
         console.log("hello");
         console.log(saved);
 
+        var globalNavElements = [{name: "Start", class: "rb_start", nav: start.startPage}];
+
         window.wrapper = document.querySelector('.rb_search');
         window.mainContainer = document.createElement("main");
         window.mainContainer.className = "rb_container";
@@ -17,12 +19,19 @@ var main = (function () {
         window.navigation = document.createElement("nav");
         window.navigation.className = "top-nav";
 
-        nav.buildNav();
+        // var navElements = [{name: "Start", class: "rb_start", nav: start.startPage}];
+        // // ,
+        // // {name: "School", class: "rb_school", nav: school.createSchoolPage},
+        // // {name: "Info", class: "rb_info", nav: {}}];
+        //
+        // var selected = "rb_start";
+        // nav.buildNav(navElements, selected);
 
         start.startPage();
 
         return {
-            saved: saved
+            saved: saved,
+            globalNavElements: globalNavElements
         };
 
 })(main);

@@ -1,6 +1,45 @@
 "use strict";
 var school = (function() {
 
+
+    /**
+    * Fetches info about school from id
+    *
+    * @param school id
+    *
+    */
+    // var createSchoolPage = function(id, titles) {
+    var createSchoolPage = function(id) {
+        let url = "https://susanavet2.skolverket.se/api/1.1/providers/" + id;
+
+        fetch(url)
+        .then(function(response) {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(function(myJson) {
+            // create / update navElements
+            let name = myJson.content.educationProvider.name.string[0].content;
+            let navElements = [
+                {name: "Start", class: "rb_start", nav: start.startPage},
+                {name: name, class: "rb_school", id: id, nav: {}}
+            ];
+            // let school_id = id;
+
+            nav.buildNav(navElements, "rb_school");
+            main.globalNavElements = navElements;
+            
+            createSchoolInfoElements(myJson);
+            buildEducations(id);
+        })
+        .catch(function(error) {
+            console.log('There has been a problem with your fetch operation: ', error.message);
+        });
+    }
+
+
     /**
     * Fetches educations from school id
     *
@@ -25,40 +64,11 @@ var school = (function() {
 
               })
           .then(function() {
-              createSchoolPage(id);
-          })
-          .then(function() {
               createEducations(titles);
           })
-          // .then(function() {
-          //     helpers.createHomeButton();
-          // })
     }
 
 
-    /**
-    * Fetches info about school from id
-    *
-    * @param school id
-    *
-    */
-    var createSchoolPage = function(id) {
-        let url = "https://susanavet2.skolverket.se/api/1.1/providers/" + id;
-
-        fetch(url)
-        .then(function(response) {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(function(myJson) {
-            createSchoolInfoElements(myJson);
-        })
-        .catch(function(error) {
-            console.log('There has been a problem with your fetch operation: ', error.message);
-        });
-    }
 
     /**
     *
@@ -68,9 +78,6 @@ var school = (function() {
     *
     */
     var createEducations = function(titles) {
-        helpers.clearPage();
-        //clearAll();
-
         let div = document.createElement("div");
         div.id = 'educations';
         // let search = document.querySelector(".rb_search");
@@ -79,9 +86,10 @@ var school = (function() {
         // let educations = document.createTextNode(titles);
         div.appendChild(ul);
         window.mainContainer.appendChild(div);
-        // search.appendChild(div);
 
+        // let links = div.getElementsByTagName("a");
         let links = div.getElementsByTagName("a");
+        console.log(div);
         console.log(links);
         // Make school names clickable
         for (var i = 0, len = links.length; i < len; i++) {
@@ -90,11 +98,8 @@ var school = (function() {
                 let id = e.target.attributes[0].nodeValue;
                 console.log(id);
                 education.buildEducationInfo(id);
-
             }
         }
-
-        //createHomeButton();
     }
 
     /**
@@ -103,17 +108,14 @@ var school = (function() {
     * @return void
     */
     var createSchoolInfoElements = function(myJson) {
-
-        // let wrapper = document.querySelector('.rb_search');
-
-        // if (wrapper !== null) {
+        helpers.clearMainContainer();
         if (window.mainContainer !== null) {
             let school = myJson.content.educationProvider;
             // create elements
             let content = document.createElement('div');
             content.id = 'school_info';
             // create name element
-            let name_el = document.createElement('h2');
+            let name_el = document.createElement('h3');
             let name = school.name.string[0].content;
             let name_text = document.createTextNode(name);
             name_el.appendChild(name_text);
@@ -149,8 +151,7 @@ var school = (function() {
             content.appendChild(url_el);
             content.appendChild(address_el);
             content.appendChild(town_el);
-            // Append #school_info at the end of .rb_search
-            // wrapper.appendChild(content);
+            // Append #school_info at the end of .rb_container
             window.mainContainer.appendChild(content);
         }
     }

@@ -2,49 +2,60 @@
 
 var nav = (function() {
 
-    var buildNav = function() {
+    var school_id = "";
+
+    var buildNav = function(navElements, selected) {
+
+        window.navigation.innerHTML = "";
+
         var ul = document.createElement('ul');
-        var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.className = "start";
-        a.setAttribute("href", "/");
-        var a_text = document.createTextNode('Skolor');
-        li.appendChild(a);
-        a.appendChild(a_text);
 
-        ul.appendChild(li);
-        window.navigation.appendChild(ul);
+        navElements.forEach(function (element) {
+            var li = document.createElement('li');
+            var navElement = document.createElement("a");
 
-        window.wrapper.appendChild(window.navigation);
-
-        var links = document.querySelectorAll('.rb_search nav a');
-        console.log(links);
-
-        for (var i = 0, len = links.length; i < len; i++) {
-            links[i].onclick = function (e) {
-                e.preventDefault();
-                console.log(e.target.className);
-                if (e.target.className === "start") {
-                    
-                    start.startPage();
+            if (selected === element.class) {
+                navElement.className = "active";
+            }
+            console.log("id:",school_id);
+            if (element.class === "rb_school") {
+                school_id = element.id;
+                console.log(school_id);
+                element.nav = function() {
+                    school.createSchoolPage(school_id);
                 }
-                // let id = e.target.attributes[0].nodeValue;
+            }
+            navElement.addEventListener("click", element.nav);
+            var text = document.createElement("span");
+            text.className = element.class;
+            text.textContent = element.name;
+            navElement.appendChild(text);
+            li.appendChild(navElement);
+
+            if (element.class !== "rb_info" && navElements.length > 1) {
+                var arrow = document.createElement("span");
+                arrow.className = "rb_arrow";
+                arrow.textContent = "–>";
+                li.appendChild(arrow);
+            }
+
+            ul.appendChild(li);
+        });
+        window.navigation.appendChild(ul);
+        window.wrapper.insertBefore(window.navigation, window.wrapper.childNodes[0]);
+
                 // testing this:
                 // var stateObj = { foo: "schools" };
                 // history.pushState(stateObj, "page 2", "schools/" + id);
                 // console.log(history);
                 // end of test
 
-
-                // school.buildEducations(id);
-                //createSchoolPage(id);
-            }
-        }
     }
 
 
     return {
-        buildNav: buildNav
+        buildNav: buildNav,
+        school_id: school_id
     }
 
 })(nav);

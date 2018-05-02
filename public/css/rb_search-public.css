@@ -34,16 +34,21 @@
     box-shadow: none;
 }
 
-.rb_search nav {
-    margin: 0 0 20px 0;
-}
-
 .rb_search nav li {
     float:left;
+    margin: 0 0 20px 0;
 }
 
 .rb_container {
     clear: both;
+}
+
+.rb_search nav a.active {
+    border-bottom: 3px solid black;
+}
+
+.rb_arrow {
+    margin: 0 6px 0 6px;
 }
 
 #home-button {

@@ -4,9 +4,6 @@ var education = (function() {
 
     /**
     * Fetches info about education from id
-    *	Söka på id efter utbildning, för att visa info
-		https://susanavet2.skolverket.se/api/1.1/infos/i.sv.HUSPR
-    *
     *
     * @param education id
     *
@@ -37,8 +34,14 @@ var education = (function() {
     */
     var createEducationInfoElements = function(myJson) {
         helpers.clearMainContainer();
-        // let wrapper = document.querySelector('.rb_search');
-        // if (wrapper !== null) {
+
+        let education_name = myJson.content.educationInfo.title.string[0].content;
+        main.globalNavElements.push({
+            name: education_name, class: "rb_info", nav: {}
+        });
+
+        nav.buildNav(main.globalNavElements, "rb_info");
+
         if (window.mainContainer !== null) {
             let education = myJson.content.educationInfo;
             // create elements
