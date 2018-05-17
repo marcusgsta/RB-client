@@ -1,34 +1,25 @@
 /* Main js module */
-"use strict";
+/* eslint-disable no-unused-vars */
+const main = (function mainJSwithWrapper() {
+// set content to start
+    const saved = JSON.parse(localStorage.getItem('saved_schools'));
+    /* eslint-enable no-unused-vars */
 
-var main = (function () {
+    /* eslint-disable no-undef */
+    const globalNavElements = [{ name: 'Start', class: 'rb_start', nav: start.startPage }];
 
-    	// set content to start
-    	var saved = JSON.parse(localStorage.getItem("saved_schools"));
+    window.wrapper = document.querySelector('.rb_search');
+    window.mainContainer = document.createElement('main');
+    window.mainContainer.className = 'rb_container';
 
-        let search = 'saved_info';
-        let saved_info = Object.keys(localStorage)
-                   .filter( (key)=> key.startsWith(search) )
-                   .map( (key)=> localStorage[key] );
+    // Add navigation elements
+    window.navigation = document.createElement('nav');
+    window.navigation.className = 'top-nav';
 
-        // console.log(saved_info);
-
-        var globalNavElements = [{name: "Start", class: "rb_start", nav: start.startPage}];
-
-        window.wrapper = document.querySelector('.rb_search');
-        window.mainContainer = document.createElement("main");
-        window.mainContainer.className = "rb_container";
-
-        // Add navigation elements
-        window.navigation = document.createElement("nav");
-        window.navigation.className = "top-nav";
-
-        start.startPage();
-
-        return {
-            saved: saved,
-            globalNavElements: globalNavElements,
-            saved_info: saved_info
-        };
-
-})(main);
+    start.startPage();
+    /* eslint-enable no-unused-vars */
+    return {
+        saved,
+        globalNavElements,
+    };
+}());

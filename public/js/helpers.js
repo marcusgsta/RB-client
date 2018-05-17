@@ -1,53 +1,61 @@
-"use strict";
-var helpers = (function() {
 
+
+const helpers = (function helpFunctions() {
+    /**
+    * Removes an DOM element by id
+    * @param {string} id
+    *
+    */
+    const removeElement = function removeElementWithId(id) {
+        const elem = document.getElementById(id);
+        return elem.parentNode.removeChild(elem);
+    };
     /**
     * Clears all child elements of .rb_search
     *
     */
-        var clearAll = function() {
-        let search_el = document.querySelector('.rb_search');
-        while (search_el.firstChild) {
-            search_el.removeChild(search_el.firstChild);
+    const clearAll = function clearFirstChildrenOfWrapper() {
+        const searchEl = document.querySelector('.rb_search');
+        while (searchEl.firstChild) {
+            searchEl.removeChild(searchEl.firstChild);
         }
-    }
+    };
 
     /**
     * Removes element #school_list
     * Removes element #educations
     */
-    var clearPage = function() {
+    const clearPage = function clearsIdSchoolListAndEducations() {
         //
-        let school_list = document.getElementById('school_list');
-        if (school_list !== null) {
+        const schoolList = document.getElementById('school_list');
+        if (schoolList !== null) {
             removeElement('school_list');
         }
 
-        let el = document.getElementById('educations');
+        const el = document.getElementById('educations');
         if (el !== null) {
             removeElement('educations');
         }
 
-        let title = document.getElementById('rb-title');
+        const title = document.getElementById('rb-title');
         if (title !== null) {
             removeElement('rb-title');
         }
-    }
+    };
 
     /**
     * Removes children of #mainContainer
     *
     */
-    var clearMainContainer = function() {
+    const clearMainContainer = function clearMainsFirstChild() {
         if (window.mainContainer !== null) {
-
-            let main = window.mainContainer;
+            const main = window.mainContainer;
 
             while (main.firstChild) {
                 main.removeChild(main.firstChild);
             }
         }
-    }
+    };
 
     /**
     * Creates h3 element for a title
@@ -55,15 +63,15 @@ var helpers = (function() {
     * @param {string} title_string
     *
     */
-    var buildTitle = function(title_string) {
+    const buildTitle = function buildTitleInMain(titleString) {
         if (window.mainContainer !== null) {
-            let title = document.createElement('h3');
-            title.id = "rb-title";
-            let title_text = document.createTextNode(title_string);
-            title.appendChild(title_text);
+            const title = document.createElement('h3');
+            title.id = 'rb-title';
+            const titleText = document.createTextNode(titleString);
+            title.appendChild(titleText);
             window.mainContainer.appendChild(title);
         }
-    }
+    };
 
     /**
     * Creates a ul from array of objects like {name: "", id:""}
@@ -71,25 +79,23 @@ var helpers = (function() {
     * @param {string} selector_id for wrapper element
     * @return DOM element UL
     */
-    var arrToUl = function(arr, selector_id) {
+    const arrToUl = function createUlFromArray(arr, selectorId) {
+        const ul = document.createElement('ul');
+        ul.id = selectorId;
 
-          var ul = document.createElement('ul'), li, link;
-          ul.id = selector_id;
-
-          for (var i = 0; i < arr.length; i++) {
-             if (Array.isArray(arr)) {
-                li = document.createElement('li');
-                link = document.createElement('a');
+        for (let i = 0; i < arr.length; i += 1) {
+            if (Array.isArray(arr)) {
+                const li = document.createElement('li');
+                const link = document.createElement('a');
                 link.setAttribute('href', arr[i].id);
                 link.classList.add('school-id');
                 link.appendChild(document.createTextNode(arr[i].name));
                 li.appendChild(link);
                 ul.appendChild(li);
             }
-          }
-          return ul;
         }
-
+        return ul;
+    };
 
 
     /**
@@ -98,58 +104,49 @@ var helpers = (function() {
     * Adds event listener which clears div and creates start page
     * on click
     */
-    var createHomeButton = function() {
+    const createHomeButton = function createHomeButtonAndAppend() {
         // create Home Button
-        let button = document.createElement('button');
-        button.id = "home-button";
-        let button_text = document.createTextNode('Visa alla skolor');
-        button.appendChild(button_text);
+        const button = document.createElement('button');
+        button.id = 'home-button';
+        const buttonText = document.createTextNode('Visa alla skolor');
+        button.appendChild(buttonText);
 
-        let content = document.querySelector('.rb_search');
+        const content = document.querySelector('.rb_search');
         content.appendChild(button);
 
         // Add event listener
-        button.addEventListener('click', function() {
-          // clearAll();
-          helpers.clearAll();
-          start.startPage();
-      });
-    }
+        button.addEventListener('click', () => {
+            // clearAll();
+            helpers.clearAll();
+            /* eslint-disable no-undef */
+            start.startPage();
+            /* eslint-enable no-undef */
+        });
+    };
 
     /**
     * If a url starts with 'www', add '//'
     * The browser will add either http or https
     * @param {string} url
     */
-    var fixUrl = function(url) {
-      var prefix = '//';
-      var www = 'www';
-      if (url.substr(0, www.length) === www)
-      {
-          url = prefix + url;
-      }
-      return url;
-    }
-
-    /**
-    * Removes an DOM element by id
-    * @param {string} id
-    *
-    */
-    var removeElement = function(id) {
-      var elem = document.getElementById(id);
-      return elem.parentNode.removeChild(elem);
-  }
+    const fixUrl = function fixPrefixOnUrl(url) {
+        const prefix = '//';
+        const www = 'www';
+        let newUrl = '';
+        if (url.substr(0, www.length) === www) {
+            newUrl = prefix + url;
+        }
+        return newUrl;
+    };
 
     return {
-        clearAll: clearAll,
-        clearPage: clearPage,
-        clearMainContainer: clearMainContainer,
-        buildTitle: buildTitle,
-        arrToUl: arrToUl,
-        createHomeButton: createHomeButton,
-        fixUrl: fixUrl,
-        removeElement: removeElement
-    }
-
-})(helpers);
+        clearAll,
+        clearPage,
+        clearMainContainer,
+        buildTitle,
+        arrToUl,
+        createHomeButton,
+        fixUrl,
+        removeElement,
+    };
+}());

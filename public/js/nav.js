@@ -1,40 +1,41 @@
-"use strict";
 
-var nav = (function() {
+/* eslint-disable no-unused-vars */
+const nav = (function navModule() {
+    let schoolId = '';
 
-    var school_id = "";
+    const buildNav = function buildNav(navElements, selected) {
+        window.navigation.innerHTML = '';
 
-    var buildNav = function(navElements, selected) {
+        const ul = document.createElement('ul');
 
-        window.navigation.innerHTML = "";
-
-        var ul = document.createElement('ul');
-
-        navElements.forEach(function (element) {
-            var li = document.createElement('li');
-            var navElement = document.createElement("a");
+        navElements.forEach((element) => {
+            const li = document.createElement('li');
+            const navElement = document.createElement('a');
 
             if (selected === element.class) {
-                navElement.className = "active";
+                navElement.className = 'active';
+            }
+            /* eslint-disable no-param-reassign */
+            /* eslint-disable no-undef */
+            if (element.class === 'rb_school') {
+                schoolId = element.id;
+                element.nav = function openPage() {
+                    school.createSchoolPage(schoolId);
+                };
             }
 
-            if (element.class === "rb_school") {
-                school_id = element.id;
-                element.nav = function() {
-                    school.createSchoolPage(school_id);
-                }
-            }
-            navElement.addEventListener("click", element.nav);
-            var text = document.createElement("span");
+            navElement.addEventListener('click', element.nav);
+
+            const text = document.createElement('span');
             text.className = element.class;
             text.textContent = element.name;
             navElement.appendChild(text);
             li.appendChild(navElement);
 
-            if (element.class !== "rb_info" && navElements.length > 1) {
-                var arrow = document.createElement("span");
-                arrow.className = "rb_arrow";
-                arrow.textContent = "–>";
+            if (element.class !== 'rb_info' && navElements.length > 1) {
+                const arrow = document.createElement('span');
+                arrow.className = 'rb_arrow';
+                arrow.textContent = '–>';
                 li.appendChild(arrow);
             }
 
@@ -42,19 +43,10 @@ var nav = (function() {
         });
         window.navigation.appendChild(ul);
         window.wrapper.insertBefore(window.navigation, window.wrapper.childNodes[0]);
-
-                // testing this:
-                // var stateObj = { foo: "schools" };
-                // history.pushState(stateObj, "page 2", "schools/" + id);
-                // console.log(history);
-                // end of test
-
-    }
-
+    };
 
     return {
-        buildNav: buildNav,
-        school_id: school_id
-    }
-
-})(nav);
+        buildNav,
+        schoolId,
+    };
+}());
